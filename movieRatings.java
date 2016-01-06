@@ -39,8 +39,8 @@ class movieRatings {
         
         /* Getting Titles */
         
-        ArrayList<String> ar3 = new ArrayList<>();
-        ArrayList<String> ar4 = new ArrayList<>();
+        ArrayList<String> capList = new ArrayList<>();
+        ArrayList<String> titleList = new ArrayList<>();
         int caps3 = 0;
         for(String title : links){
             String title1 = ((title.substring(32)).replace("-", " ")).replace("   ", " ");
@@ -49,49 +49,49 @@ class movieRatings {
             
             for(String caps : title1.split(" ")){
                 String caps1 = Character.toUpperCase(caps.charAt(0)) + caps.substring(1);
-                ar3.add(caps1);
+                capList.add(caps1);
             }
-            String finaltitle = "";
+            String finalTitle = "";
             for(String h : title1.split(" ")){
-                finaltitle = finaltitle + ar3.get(caps3)+ " ";
+                finalTitle = finalTitle + capList.get(caps3)+ " ";
                 caps3++;
             }
-            ar4.add(finaltitle);
+            titleList.add(finalTitle);
             
         }
         
-        System.out.println(ar4);
+        System.out.println(titleList);
         
         /* Getting ratings */
         
-        ArrayList<Element> ar1 = new ArrayList<>();
-        ArrayList<String> mtratings = new ArrayList<>();
+        ArrayList<Element> scrapeList = new ArrayList<>();
+        ArrayList<String> metaRatings = new ArrayList<>();
         Elements ratings = userAgent.doc.findEvery("<span>");
         for(Element scrape5 : ratings){
-            ar1.add(scrape5);
+            scrapeList.add(scrape5);
         }
         for(int counting = 47;counting < 100;counting+=4){
-            mtratings.add((ar1.get(counting)).getText());
+            metaRatings.add((scrapeList.get(counting)).getText());
         }
         
         // Getting IMBD ratings
         
-        String imbdlink;
-        Elements ratingsearch;
-        ArrayList<String> imbdrate1 = new ArrayList<>();
-        for (String imbdsearch : ar4.subList(0, 14)){
-            ArrayList<String> ar5 = new ArrayList<>();
+        String imbdLink;
+        Elements ratingSearch;
+        ArrayList<String> imbdRate1 = new ArrayList<>();
+        for (String imbdSearch : titleList.subList(0, 14)){
+            ArrayList<String> finalLinks = new ArrayList<>();
             
             //Searching for movie links
             
-            imbdlink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imbdsearch.replace(" ", "+") + "&s=all";
-            userAgent.visit(imbdlink);
-            ratingsearch = userAgent.doc.findEvery("<a>");
-            for (Element scrape2 : ratingsearch){
+            imbdLink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imbdSearch.replace(" ", "+") + "&s=all";
+            userAgent.visit(imbdLink);
+            ratingSearch = userAgent.doc.findEvery("<a>");
+            for (Element scrape2 : ratingSearch){
                 String convert = scrape2.toXMLString();
                 if (convert.contains("title/tt")){
-                    String movielink1 = convert.substring(9).replace("\">", "");
-                    ar5.add(movielink1);
+                    String movieLink1 = convert.substring(9).replace("\">", "");
+                    finalLinks.add(movieLink1);
                     break;
                 }
 
@@ -99,48 +99,49 @@ class movieRatings {
             
             //Visiting movie links and scraping ratings
             
-            for (String imbdratings : ar5){
-                ArrayList<String> imbdrate= new ArrayList<>();
-                userAgent.visit(imbdratings);
-                Elements imbdratingsearch = userAgent.doc.findEvery("<span>");
+            for (String imbdRatings : finalLinks){
+                ArrayList<String> imbdRate= new ArrayList<>();
+                userAgent.visit(imbdRatings);
+                Elements imbdRatingSearch = userAgent.doc.findEvery("<span>");
 
-                for (Element ratings3 : imbdratingsearch){
+                for (Element ratings3 : imbdRatingSearch){
                     String ratings4 = ratings3.getText().trim();
-                    imbdrate.add(ratings4);
+                    imbdRate.add(ratings4);
                 }
-                String ratings5 = imbdrate.get(34);
+                String ratings5 = imbdRate.get(34);
                 if (ratings5.contains("nbsp")){
-                    imbdrate1.add("tbd");
+                    imbdRate1.add("tbd");
                 } else{
-                    imbdrate1.add(ratings5);
+                    imbdRate1.add(ratings5);
                 }
             }
         }
         
         //Getting RT ratings
         
-        ArrayList<String> rtratings = new ArrayList<>();
-        for (String rtsearch : ar4.subList(0,14)){
-            ArrayList<String> rtratings1 = new ArrayList<>();
-            String rtlink = "http://www.rottentomatoes.com/m/" + rtsearch.substring(0,rtsearch.length()-1).replace(" ", "_");
+        ArrayList<String> rtRatings = new ArrayList<>();
+        for (String rtSearch : titleList.subList(0,14)){
+            ArrayList<String> rtRatings1 = new ArrayList<>();
+            String rtLink = "http://www.rottentomatoes.com/m/" + rtSearch.substring(0,rtSearch.length()-1).replace(" ", "_");
             try{
-            userAgent.visit(rtlink);}
+            userAgent.visit(rtLink);}
             catch(ResponseException e){
                 break;
             }
-            Elements rtsearch1 = userAgent.doc.findEvery("<div>");
-            for (Element rtsearch2 : rtsearch1){
-                String rtsearch3 = rtsearch2.getText().trim();
-                rtratings1.add(rtsearch3);
+            Elements rtSearch1 = userAgent.doc.findEvery("<div>");
+            for (Element rtSearch2 : rtSearch1){
+                rtRatings1.add(rtSearch2.getText().trim());
             }
-            if (rtratings1.get(235).length() > 2){
-                String[] rtratings2 = rtratings1.get(235).split("/");
-                String rtratings5 = rtratings2[0];
-                float rtratings3 = Float.valueOf(rtratings5)*2;
-                String rtratings4 = String.valueOf(rtratings3);
-                rtratings.add(rtratings4);
+            if (rtRatings1.get(235).length() > 2){
+                String[] rtRatings2 = rtRatings1.get(235).split("/");
+                String rtRatings5 = rtRatings2[0];
+                
+                //RottenTomatoes rates out of 5 so I had to double their score
+                
+                float rtRatings3 = Float.valueOf(rtRatings5)*2;
+                rtRatings.add(String.valueOf(rtRatings3));
             } else{
-                rtratings.add("tbd");
+                rtRatings.add("tbd");
             }
         }
 
@@ -148,55 +149,55 @@ class movieRatings {
         Not all sites provided ratings for all movies
         */
         
-        ArrayList<String> finalrate = new ArrayList<>();
-        for(int count6 = 0 ; count6 < 14 ; count6++){
+        ArrayList<String> finalRate = new ArrayList<>();
+        for(int count14 = 0 ; count14 < 14 ; count14++){
             boolean mt;
             boolean rt;
             boolean imbd;
-            float rtavg = 0;
-            float mtavg = 0;
-            float imbdavg = 0;
+            float rtAVG = 0;
+            float metaAVG = 0;
+            float imbdAVG = 0;
             float con;
-            String finalrates;
-            if (mtratings.get(count6).contains("tbd")){
+            String finalRates;
+            if (metaRatings.get(count14).contains("tbd")){
                 mt = false;
             } else{
                 mt = true;
-                mtavg = Float.valueOf(mtratings.get(count6));
-            } if(rtratings.get(count6).contains("tbd")){
+                metaAVG = Float.valueOf(metaRatings.get(count14));
+            } if(rtRatings.get(count14).contains("tbd")){
                 rt = false;
             } else{
                 rt = true;
-                rtavg = Float.valueOf(rtratings.get(count6));
-            } if (imbdrate1.get(count6).contains("tbd") || imbdrate1.get(count6).length()<2){
+                rtAVG = Float.valueOf(rtRatings.get(count14));
+            } if (imbdRate1.get(count14).contains("tbd") || imbdRate1.get(count14).length()<2){
                 imbd = false;
             } else {
                 imbd = true;
-                imbdavg = Float.valueOf(imbdrate1.get(count6));
+                imbdAVG = Float.valueOf(imbdRate1.get(count14));
             }
             if (mt && rt && imbd){
-                con = ((mtavg+rtavg+imbdavg)/3);
-                finalrate.add(String.valueOf(con).substring(0,3));
+                con = ((metaAVG+rtAVG+imbdAVG)/3);
+                finalRate.add(String.valueOf(con).substring(0,3));
             } else if (mt && rt){
-                con = ((mtavg+rtavg)/2);
-                finalrate.add(String.valueOf(con).substring(0,3));
+                con = ((metaAVG+rtAVG)/2);
+                finalRate.add(String.valueOf(con).substring(0,3));
             } else if (mt && imbd){
-                con = ((mtavg+imbdavg)/2);
-                finalrate.add(String.valueOf(con).substring(0,3));
+                con = ((metaAVG+imbdAVG)/2);
+                finalRate.add(String.valueOf(con).substring(0,3));
             } else if (rt && imbd){
-                con = ((rtavg+imbdavg)/2);
-                finalrate.add(String.valueOf(con).substring(0,3));
+                con = ((rtAVG+imbdAVG)/2);
+                finalRate.add(String.valueOf(con).substring(0,3));
             } else if (mt){
-                finalrate.add(String.valueOf(mtavg));
+                finalRate.add(String.valueOf(metaAVG));
             } else if (rt){
-                finalrate.add(String.valueOf(rtavg));
+                finalRate.add(String.valueOf(rtAVG));
             } else if (imbd){
-                finalrate.add(String.valueOf(imbdavg));
+                finalRate.add(String.valueOf(imbdAVG));
             } else{
-                finalrate.add(mtratings.get(count6));
+                finalRate.add(metaRatings.get(count14));
             }
         }
-        System.out.println(finalrate);
+        System.out.println(finalRate);
     }
     
 }
