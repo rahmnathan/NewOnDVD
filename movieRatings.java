@@ -14,17 +14,17 @@ public class movieRatings{
     
     //To increase number of ratings given, increase ratingCount
     
-    static int ratingCount = 15;
+    static int ratingCount = 5;
     
     // userAgent.visit() Throws ResponseException
     
     public static void main(String[] args) throws ResponseException{
         
         //Printing Links, Titles, And Average Ratings
-        
-        System.out.println(linksFinal(siteVisit()));
-        System.out.println(titlesFinal(linksFinal(siteVisit())));
-        System.out.println(avgRatings(imbdRatings(titlesFinal(linksFinal(siteVisit()))), RTratings(titlesFinal(linksFinal(siteVisit()))), metaRatings(siteVisit())));
+        Document siteVisitor = siteVisit();
+        System.out.println(linksFinal(siteVisitor));
+        System.out.println(titlesFinal(linksFinal(siteVisitor)));
+        System.out.println(avgRatings(imbdRatings(titlesFinal(linksFinal(siteVisitor))), RTratings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
     }
     
     public static Document siteVisit() throws ResponseException{
@@ -163,7 +163,6 @@ public class movieRatings{
                 }
 
             }
-            
             //Visiting movie links and scraping ratings
             
             for (String imbdRatings : finalLinks){
@@ -177,7 +176,7 @@ public class movieRatings{
                 for (Element ratings3 : imbdRatingSearch){
                     imbdRate.add(ratings3.getText().trim());
                 }
-                
+                //System.out.println(imbdRate);
                 /* Ratings are held in the 34th position of this list.
                 For an unknown reason, IMBD occasionally returns &nbsp or
                 a random int value instead of the ratings as it should. We take
