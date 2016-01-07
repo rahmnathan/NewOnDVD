@@ -12,7 +12,11 @@ import java.util.ArrayList;
 
 public class movieRatings{
     
-    /* userAgent.visit() Throws ResponseException */
+    //To increase number of ratings given, increase ratingCount
+    
+    static int ratingCount = 15;
+    
+    // userAgent.visit() Throws ResponseException
     
     public static void main(String[] args) throws ResponseException{
         
@@ -38,20 +42,22 @@ public class movieRatings{
         
         ArrayList<String> links = new ArrayList<>();
         ArrayList<Element> initialScrape = new ArrayList<>();
-        Elements scrape;
 
         // Links Are Contained In <a> Tags
         
-        scrape = main.findEvery("<a>");
+        Elements scrape = main.findEvery("<a>");
         for(Element scrape1:scrape){
             initialScrape.add(scrape1);
         }
         
         //Links start in the 36th tag
         
-        for(int links1 = 36;links1<100;links1++){
+        for(int links1 = 36;links1<200;links1++){
             String sortLinks = initialScrape.get(links1).getText();
-            if(sortLinks.length()>80){ //There is unecessary data in strings shorter than 80 char
+            
+            //Strings containing less than 80 char do not have links in them
+            
+            if(sortLinks.length()>80){ 
                 String makeString = (initialScrape.get(links1)).toXMLString();
                 
                 //Links begin at char 9 and trail with ">  Cleaning them up here
@@ -65,7 +71,7 @@ public class movieRatings{
 
     public static ArrayList<String> titlesFinal(ArrayList<String> links){
 
-        // Getting Titles
+        // Getting Titles from MetaCritic
         
         ArrayList<String> capList = new ArrayList<>();
         ArrayList<String> titleList = new ArrayList<>();
@@ -73,7 +79,10 @@ public class movieRatings{
         for(String title : links){
             String title1 = ((title.substring(32)).replace("-", " ")).replace("   ", " ");
             
-            // Capitalizing Titles
+            /* Capitalizing Titles
+            The titles are currently in a string like "harry potter" so we're
+            splitting them up to capitalize each word
+            */
             
             for(String words : title1.split(" ")){
                 capList.add(Character.toUpperCase(words.charAt(0)) + words.substring(1));
@@ -99,7 +108,7 @@ public class movieRatings{
         
     public static ArrayList<String> metaRatings(Document main){
         
-        /* Getting ratings */
+        // Getting ratings from MetaCritic
         
         ArrayList<String> metaRatingsFinal = new ArrayList<>();
         ArrayList<Element> scrapeList = new ArrayList<>();
@@ -112,11 +121,11 @@ public class movieRatings{
         }
         
         /* Metacritic ratings start at line 47 and occur every 4 elements
-        More ratings can be collected by increasing ratingSearch
+        More ratings can be collected from  by increasing metaRatingCount
         */
         
-        int ratingSearch = 100;
-        for(int counting = 47;counting < ratingSearch;counting+=4){
+        int metaRatingCount = 200;
+        for(int counting = 47;counting < metaRatingCount;counting+=4){
             metaRatingsFinal.add((scrapeList.get(counting)).getText());
         }
         return metaRatingsFinal;
@@ -124,15 +133,10 @@ public class movieRatings{
     
     public static ArrayList<String> imbdRatings(ArrayList<String> titleList) throws ResponseException{    
     
-        /* Getting IMBD ratings
-        More ratings can be found by increasing subList length
-        I've left it at 14 for speed.
-        */
-        
-        String imbdLink;
-        Elements ratingSearch;
+        // Getting IMBD ratings
+   
         ArrayList<String> imbdRate1 = new ArrayList<>();
-        for (String imbdSearch : titleList.subList(0, 14)){
+        for (String imbdSearch : titleList.subList(0, ratingCount)){
             UserAgent userAgent = new UserAgent();
             ArrayList<String> finalLinks = new ArrayList<>();
             
@@ -142,20 +146,19 @@ public class movieRatings{
             accurate and cannot account for sequals/remakes. Hopefully this can be
             optimized in the future*/
             
-            imbdLink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imbdSearch.replace(" ", "+") + "&s=all";
+            String imbdLink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imbdSearch.replace(" ", "+") + "&s=all";
             userAgent.visit(imbdLink);
             
             // IMBD links are contained in the <a> tags
             
-            ratingSearch = userAgent.doc.findEvery("<a>");
+            Elements ratingSearch = userAgent.doc.findEvery("<a>");
             for (Element scrape2 : ratingSearch){
                 String convert = scrape2.toXMLString();
                 
                 // <a> tags with links contain "title/tt" so we are looking for that
                 
                 if (convert.contains("title/tt")){
-                    String movieLink1 = convert.substring(9).replace("\">", "");
-                    finalLinks.add(movieLink1);
+                    finalLinks.add(convert.substring(9).replace("\">", ""));
                     break;
                 }
 
@@ -172,18 +175,17 @@ public class movieRatings{
                 Elements imbdRatingSearch = userAgent.doc.findEvery("<span>");
 
                 for (Element ratings3 : imbdRatingSearch){
-                    String ratings4 = ratings3.getText().trim();
-                    imbdRate.add(ratings4);
+                    imbdRate.add(ratings3.getText().trim());
                 }
                 
                 /* Ratings are held in the 34th position of this list.
-                For an unknown reason, IMBD occasionally returns &nbsp
-                instead of the ratings as it should. We take care of that here
-                by replacing it with tbd, but hopefully this can be solved in
-                the future*/
+                For an unknown reason, IMBD occasionally returns &nbsp or
+                a random int value instead of the ratings as it should. We take
+                care of that here by replacing it with tbd, but hopefully this
+                can be solved in the future*/
                 
                 String ratings5 = imbdRate.get(34);
-                if (ratings5.contains("nbsp")){
+                if (ratings5.contains("nbsp") || ratings5.length() < 2){
                     imbdRate1.add("tbd");
                 } else{
                     imbdRate1.add(ratings5);
@@ -195,10 +197,10 @@ public class movieRatings{
     
     public static ArrayList<String> RTratings(ArrayList<String> titleList){
         
-        //Getting RT ratings
+        //Getting RottenTomatoe's ratings
         
         ArrayList<String> rtRatings = new ArrayList<>();
-        for (String rtSearch : titleList.subList(0,14)){
+        for (String rtSearch : titleList.subList(0, ratingCount)){
             UserAgent userAgent = new UserAgent();
             ArrayList<String> rtRatings1 = new ArrayList<>();
             
@@ -230,11 +232,10 @@ public class movieRatings{
                 We're getting rid of "/10" here */
                 
                 String[] rtRatings2 = rtRatings1.get(235).split("/");
-                String rtRatings5 = rtRatings2[0];
                 
                 //RottenTomatoes rates out of 5 so I had to double their score
                 
-                float rtRatings3 = Float.valueOf(rtRatings5)*2;
+                float rtRatings3 = Float.valueOf(rtRatings2[0])*2;
                 rtRatings.add(String.valueOf(rtRatings3));
             } else{
                 rtRatings.add("tbd");
@@ -251,7 +252,7 @@ public class movieRatings{
         */
         
         ArrayList<String> finalRate = new ArrayList<>();
-        for(int count14 = 0 ; count14 < 14 ; count14++){
+        for(int countRating = 0 ; countRating < ratingCount ; countRating++){
             boolean mt;
             boolean rt;
             boolean imbd;
@@ -263,21 +264,21 @@ public class movieRatings{
             
             //Checking which ratings we have succesfully pulled
             
-            if (metaRatingsFinal.get(count14).contains("tbd")){
+            if (metaRatingsFinal.get(countRating).contains("tbd")){
                 mt = false;
             } else{
                 mt = true;
-                metaAVG = Float.valueOf(metaRatingsFinal.get(count14));
-            } if(rtRatings.get(count14).contains("tbd")){
+                metaAVG = Float.valueOf(metaRatingsFinal.get(countRating));
+            } if(rtRatings.get(countRating).contains("tbd")){
                 rt = false;
             } else{
                 rt = true;
-                rtAVG = Float.valueOf(rtRatings.get(count14));
-            } if (imbdRate1.get(count14).contains("tbd") || imbdRate1.get(count14).length()<2){
+                rtAVG = Float.valueOf(rtRatings.get(countRating));
+            } if (imbdRate1.get(countRating).contains("tbd") || imbdRate1.get(countRating).length()<2){
                 imbd = false;
             } else {
                 imbd = true;
-                imbdAVG = Float.valueOf(imbdRate1.get(count14));
+                imbdAVG = Float.valueOf(imbdRate1.get(countRating));
             }
             
             //Calculating averages based on which ratings we've scraped
@@ -301,7 +302,7 @@ public class movieRatings{
             } else if (imbd){
                 finalRate.add(String.valueOf(imbdAVG));
             } else{
-                finalRate.add(metaRatingsFinal.get(count14));
+                finalRate.add(metaRatingsFinal.get(countRating));
             }
         }
         return finalRate;
