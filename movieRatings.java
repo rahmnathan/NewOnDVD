@@ -75,9 +75,8 @@ public class movieRatings{
             
             // Capitalizing Titles
             
-            for(String caps : title1.split(" ")){
-                String caps1 = Character.toUpperCase(caps.charAt(0)) + caps.substring(1);
-                capList.add(caps1);
+            for(String words : title1.split(" ")){
+                capList.add(Character.toUpperCase(words.charAt(0)) + words.substring(1));
             }
             
             // Assembling Titles
@@ -90,6 +89,7 @@ public class movieRatings{
                 finalTitle = finalTitle + capList.get(caps3)+ " ";
                 caps3++;
             }
+            
             //Assembling final list and Removing trailing space
             
             titleList.add(finalTitle.substring(0,finalTitle.length()-1));
@@ -111,9 +111,12 @@ public class movieRatings{
             scrapeList.add(scrape5);
         }
         
-        //ratings start at line 47 and occur every 4 elements
+        /* Metacritic ratings start at line 47 and occur every 4 elements
+        More ratings can be collected by increasing ratingSearch
+        */
         
-        for(int counting = 47;counting < 100;counting+=4){
+        int ratingSearch = 100;
+        for(int counting = 47;counting < ratingSearch;counting+=4){
             metaRatingsFinal.add((scrapeList.get(counting)).getText());
         }
         return metaRatingsFinal;
@@ -121,7 +124,10 @@ public class movieRatings{
     
     public static ArrayList<String> imbdRatings(ArrayList<String> titleList) throws ResponseException{    
     
-        // Getting IMBD ratings
+        /* Getting IMBD ratings
+        More ratings can be found by increasing subList length
+        I've left it at 14 for speed.
+        */
         
         String imbdLink;
         Elements ratingSearch;
