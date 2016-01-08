@@ -6,7 +6,7 @@ import com.jaunt.UserAgent;
 import java.util.ArrayList;
 
 /**
- * @author Nathan 
+ * @author Nathan
  * Created December 2015
  */
 
@@ -274,9 +274,6 @@ public class movieRatings{
             } else{
                 rt = true;
                 rtAVG = Float.valueOf(rtRatings.get(countRating));
-                
-                // imbd randomly throws unrelated ints - checking for that here
-                
             } if (imbdRate1.get(countRating).contains("tbd") || imbdRate1.get(countRating).length()<2){
                 imbd = false;
             } else {
