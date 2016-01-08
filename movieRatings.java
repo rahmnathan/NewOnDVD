@@ -6,7 +6,7 @@ import com.jaunt.UserAgent;
 import java.util.ArrayList;
 
 /**
- * @author Nathan
+ * @author Nathan 
  * Created December 2015
  */
 
@@ -21,6 +21,7 @@ public class movieRatings{
     public static void main(String[] args) throws ResponseException{
         
         //Printing Links, Titles, And Average Ratings
+        
         Document siteVisitor = siteVisit();
         System.out.println(linksFinal(siteVisitor));
         System.out.println(titlesFinal(linksFinal(siteVisitor)));
@@ -62,8 +63,7 @@ public class movieRatings{
                 
                 //Links begin at char 9 and trail with ">  Cleaning them up here
                 
-                String makeString2 = makeString.substring(9);
-                links.add(makeString2.replace("\">",""));
+                links.add(makeString.substring(9, makeString.length()-2));
             }
         }
         return links;
@@ -121,11 +121,11 @@ public class movieRatings{
         }
         
         /* Metacritic ratings start at line 47 and occur every 4 elements
-        More ratings can be collected from  by increasing metaRatingCount
+        Currently collects the first 50 ratings. This can be increased by
+        increasing the limit of counting.
         */
         
-        int metaRatingCount = 200;
-        for(int counting = 47;counting < metaRatingCount;counting+=4){
+        for(int counting = 47;counting < 250;counting+=4){
             metaRatingsFinal.add((scrapeList.get(counting)).getText());
         }
         return metaRatingsFinal;
@@ -163,6 +163,7 @@ public class movieRatings{
                 }
 
             }
+            
             //Visiting movie links and scraping ratings
             
             for (String imbdRatings : finalLinks){
@@ -176,7 +177,7 @@ public class movieRatings{
                 for (Element ratings3 : imbdRatingSearch){
                     imbdRate.add(ratings3.getText().trim());
                 }
-                //System.out.println(imbdRate);
+                
                 /* Ratings are held in the 34th position of this list.
                 For an unknown reason, IMBD occasionally returns &nbsp or
                 a random int value instead of the ratings as it should. We take
@@ -209,7 +210,7 @@ public class movieRatings{
             
             String rtLink = "http://www.rottentomatoes.com/m/" + rtSearch.replace(" ", "_");
             
-            //Catch the exception if the link is not found
+            //Catching the exception if the link is not found
             
             try{
             userAgent.visit(rtLink);}
@@ -273,6 +274,9 @@ public class movieRatings{
             } else{
                 rt = true;
                 rtAVG = Float.valueOf(rtRatings.get(countRating));
+                
+                // imbd randomly throws unrelated ints - checking for that here
+                
             } if (imbdRate1.get(countRating).contains("tbd") || imbdRate1.get(countRating).length()<2){
                 imbd = false;
             } else {
