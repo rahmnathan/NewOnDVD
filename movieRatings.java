@@ -25,7 +25,7 @@ public class movieRatings{
         Document siteVisitor = siteVisit();
         System.out.println(linksFinal(siteVisitor));
         System.out.println(titlesFinal(linksFinal(siteVisitor)));
-        System.out.println(avgRatings(imbdRatings(titlesFinal(linksFinal(siteVisitor))), RTratings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
+        System.out.println(avgRatings(imdbRatings(titlesFinal(linksFinal(siteVisitor))), RTratings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
     }
     
     public static Document siteVisit() throws ResponseException{
@@ -131,25 +131,25 @@ public class movieRatings{
         return metaRatingsFinal;
     }
     
-    public static ArrayList<String> imbdRatings(ArrayList<String> titleList) throws ResponseException{    
+    public static ArrayList<String> imdbRatings(ArrayList<String> titleList) throws ResponseException{    
     
         // Getting IMBD ratings
    
-        ArrayList<String> imbdRate1 = new ArrayList<>();
-        for (String imbdSearch : titleList.subList(0, ratingCount)){
+        ArrayList<String> imdbRate1 = new ArrayList<>();
+        for (String imdbSearch : titleList.subList(0, ratingCount)){
             UserAgent userAgent = new UserAgent();
             ArrayList<String> finalLinks = new ArrayList<>();
             
-            /*IMBD links cannot be directly created as the title is not 
-            contained in the url. Thus we must search IMBD for the movie
+            /*IMDB links cannot be directly created as the title is not 
+            contained in the url. Thus we must search IMDB for the movie
             and select the first (most relevant) link. This is not perfectly
             accurate and cannot account for sequals/remakes. Hopefully this can be
             optimized in the future*/
             
-            String imbdLink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imbdSearch.replace(" ", "+") + "&s=all";
-            userAgent.visit(imbdLink);
+            String imdbLink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imdbSearch.replace(" ", "+") + "&s=all";
+            userAgent.visit(imdbLink);
             
-            // IMBD links are contained in the <a> tags
+            // IMDB links are contained in the <a> tags
             
             Elements ratingSearch = userAgent.doc.findEvery("<a>");
             for (Element scrape2 : ratingSearch){
@@ -166,33 +166,33 @@ public class movieRatings{
             
             //Visiting movie links and scraping ratings
             
-            for (String imbdRatings : finalLinks){
+            for (String imdbRatings : finalLinks){
                 ArrayList<String> imbdRate= new ArrayList<>();
-                userAgent.visit(imbdRatings);
+                userAgent.visit(imdbRatings);
                 
-                //IMBD ratings are contained in the <span> tag
+                //IMDB ratings are contained in the <span> tag
                 
-                Elements imbdRatingSearch = userAgent.doc.findEvery("<span>");
+                Elements imdbRatingSearch = userAgent.doc.findEvery("<span>");
 
-                for (Element ratings3 : imbdRatingSearch){
+                for (Element ratings3 : imdbRatingSearch){
                     imbdRate.add(ratings3.getText().trim());
                 }
                 
                 /* Ratings are held in the 34th position of this list.
-                For an unknown reason, IMBD occasionally returns &nbsp or
+                For an unknown reason, IMDB occasionally returns &nbsp or
                 a random int value instead of the ratings as it should. We take
                 care of that here by replacing it with tbd, but hopefully this
                 can be solved in the future*/
                 
                 String ratings5 = imbdRate.get(34);
                 if (ratings5.contains("nbsp") || ratings5.length() < 2){
-                    imbdRate1.add("tbd");
+                    imdbRate1.add("tbd");
                 } else{
-                    imbdRate1.add(ratings5);
+                    imdbRate1.add(ratings5);
                 }
             }
         }
-        return imbdRate1;
+        return imdbRate1;
     }
     
     public static ArrayList<String> RTratings(ArrayList<String> titleList){
