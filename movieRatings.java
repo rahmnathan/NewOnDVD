@@ -23,16 +23,17 @@ public class movieRatings extends NewJFrame {
         
         //Printing Links, Titles, And Average Ratings
         
-        Document siteVisitor = siteVisit();
         /*
         This code (Icons) Scrapes cover art for movies from MetaCritic in a local folder
         with corresponding names. Please do not spam-scrape Metacritic. It's
-        unnecessary. 
+        unnecessary.
         
-        Icons icon = new Icons();
+        Icons icon = new Icons(); 
         Icons.saveImage(iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor)), titlesFinal(linksFinal(siteVisitor)));
         iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor));
         */
+        
+        Document siteVisitor = siteVisit();
         NewJFrame.window(titlesFinal(linksFinal(siteVisitor)));
     }
     
@@ -115,6 +116,9 @@ public class movieRatings extends NewJFrame {
     }
     
     public static ArrayList<String> iconLinks(ArrayList<String> titleList, ArrayList<String> linkList) {
+        
+        // Pulling links out of our list and visiting the respective site
+        
         ArrayList<String> iconsFinal = new ArrayList<>();
         for (String link : linkList){
             ArrayList<Element> icons = new ArrayList<>();
@@ -122,15 +126,27 @@ public class movieRatings extends NewJFrame {
             try{
             userAgent.visit(link);
             } catch (ResponseException e){}
+            
+            // Grabbing image links
+            
             Elements iconList = userAgent.doc.findEvery("<img>");
             for (Element iconSplit : iconList){
                 icons.add(iconSplit);
             }
+            
+            /* Links are the 3rd item in the list. We're turning them into
+            strings and cutting out the first 43 char as they are part of the
+            tag, not the link. We then split on a '"' to remove the trailing
+            data
+            */
+            
             String icons1  = icons.get(2).toXMLString().substring(44);
             String[] icons2 = icons1.split("\"");
+            
+            // Adding the linkn to our final ArrayList
+            
             iconsFinal.add(icons2[0]);
         }
-        //System.out.println(iconsFinal);
         return iconsFinal;
     }
 
