@@ -3,6 +3,7 @@ import com.jaunt.Element;
 import com.jaunt.Elements;
 import com.jaunt.ResponseException;
 import com.jaunt.UserAgent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -10,22 +11,29 @@ import java.util.ArrayList;
  * Created December 2015
  */
 
-public class movieRatings{
+public class movieRatings extends NewJFrame {
     
     //To increase number of ratings given, increase ratingCount
     
-    static int ratingCount = 5;
+    static int ratingCount = 9;
     
     // userAgent.visit() Throws ResponseException
     
-    public static void main(String[] args) throws ResponseException{
+    public static void main(String[] args) throws ResponseException, IOException{
         
         //Printing Links, Titles, And Average Ratings
         
         Document siteVisitor = siteVisit();
-        System.out.println(linksFinal(siteVisitor));
-        System.out.println(titlesFinal(linksFinal(siteVisitor)));
-        System.out.println(avgRatings(imdbRatings(titlesFinal(linksFinal(siteVisitor))), RTratings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
+        /*
+        This code (Icons) Scrapes cover art for movies from MetaCritic in a local folder
+        with corresponding names. Please do not spam-scrape Metacritic. It's
+        unnecessary. 
+        
+        Icons icon = new Icons();
+        Icons.saveImage(iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor)), titlesFinal(linksFinal(siteVisitor)));
+        iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor));
+        */
+        NewJFrame.window(titlesFinal(linksFinal(siteVisitor)));
     }
     
     public static Document siteVisit() throws ResponseException{
@@ -53,7 +61,7 @@ public class movieRatings{
         
         //Links start in the 36th tag
         
-        for(int links1 = 36;links1<200;links1++){
+        for(int links1 = 36;links1<60;links1++){
             String sortLinks = initialScrape.get(links1).getText();
             
             //Strings containing less than 80 char do not have links in them
@@ -105,6 +113,27 @@ public class movieRatings{
         }
         return titleList; 
     }
+    
+    public static ArrayList<String> iconLinks(ArrayList<String> titleList, ArrayList<String> linkList) {
+        ArrayList<String> iconsFinal = new ArrayList<>();
+        for (String link : linkList){
+            ArrayList<Element> icons = new ArrayList<>();
+            UserAgent userAgent = new UserAgent();
+            try{
+            userAgent.visit(link);
+            } catch (ResponseException e){}
+            Elements iconList = userAgent.doc.findEvery("<img>");
+            for (Element iconSplit : iconList){
+                icons.add(iconSplit);
+            }
+            String icons1  = icons.get(2).toXMLString().substring(44);
+            String[] icons2 = icons1.split("\"");
+            iconsFinal.add(icons2[0]);
+        }
+        //System.out.println(iconsFinal);
+        return iconsFinal;
+    }
+
         
     public static ArrayList<String> metaRatings(Document main){
         
