@@ -15,23 +15,36 @@ public class movieRatings extends NewJFrame {
     
     //To increase number of ratings given, increase ratingCount
     
-    static int ratingCount = 9;
+    static int ratingCount = 10;
     
     // userAgent.visit() Throws ResponseException
     
     public static void main(String[] args) throws ResponseException, IOException{
-        
-        //Printing Links, Titles, And Average Ratings
-        
+                
         /*
         This code (Icons) Scrapes cover art for movies from MetaCritic in a local folder
         with corresponding names. Please do not spam-scrape Metacritic. It's
         unnecessary.
         
-        Icons icon = new Icons(); 
+        Icons icon = new Icons();
         Icons.saveImage(iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor)), titlesFinal(linksFinal(siteVisitor)));
         iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor));
         */
+        
+        
+        /*
+        These statements print out the lists of information given by each
+        method. For ease of debugging I will leave them here. Simply uncomment
+        them to see the corresponding list printed out.
+
+        System.out.println(titlesFinal(linksFinal(siteVisitor)));
+        System.out.println(linksFinal(siteVisitor));
+        System.out.println(metaRatings(siteVisitor));
+        System.out.println(RTratings(titlesFinal(linksFinal(siteVisitor))));
+        System.out.println(imdbRatings(titlesFinal(linksFinal(siteVisitor))));
+        */
+        
+        // Calling our JFrame window
         
         Document siteVisitor = siteVisit();
         NewJFrame.window(titlesFinal(linksFinal(siteVisitor)));
@@ -246,6 +259,7 @@ public class movieRatings extends NewJFrame {
         
         ArrayList<String> rtRatings = new ArrayList<>();
         for (String rtSearch : titleList.subList(0, ratingCount)){
+            boolean check = true;
             UserAgent userAgent = new UserAgent();
             ArrayList<String> rtRatings1 = new ArrayList<>();
             
@@ -260,31 +274,35 @@ public class movieRatings extends NewJFrame {
             try{
             userAgent.visit(rtLink);}
             catch(ResponseException e){
-                break;
-            }
-            Elements rtSearch1 = userAgent.doc.findEvery("<div>");
-            for (Element rtSearch2 : rtSearch1){
-                rtRatings1.add(rtSearch2.getText().trim());
-            }
-            
-            /* Sometimes RT throws integers that are not related to the ratings.
-            We check for that here by checking the length of the string
-            */
-            
-            if (rtRatings1.get(235).length() > 2){
-                
-                /*Ratings are in line 235 and are formatted as "9.9/10"
-                We're getting rid of "/10" here */
-                
-                String[] rtRatings2 = rtRatings1.get(235).split("/");
-                
-                //RottenTomatoes rates out of 5 so I had to double their score
-                
-                float rtRatings3 = Float.valueOf(rtRatings2[0])*2;
-                rtRatings.add(String.valueOf(rtRatings3));
-            } else{
+                check = false;
                 rtRatings.add("tbd");
             }
+            
+            if(check){
+                Elements rtSearch1 = userAgent.doc.findEvery("<div>");
+                for (Element rtSearch2 : rtSearch1){
+                    rtRatings1.add(rtSearch2.getText().trim());
+                }
+
+                /* Sometimes RT throws integers that are not related to the ratings.
+                We check for that here by checking the length of the string
+                */
+
+                if (rtRatings1.get(235).length() > 1){
+
+                    /*Ratings are in line 235 and are formatted as "9.9/10"
+                    We're getting rid of "/10" here */
+
+                    String[] rtRatings2 = rtRatings1.get(235).split("/");
+
+                    //RottenTomatoes rates out of 5 so I had to double their score
+
+                    float rtRatings3 = Float.valueOf(rtRatings2[0])*2;
+                    rtRatings.add(String.valueOf(rtRatings3));
+                } else{
+                    rtRatings.add("tbd");
+                }
+            } else{}
         }
         return rtRatings;
     }
