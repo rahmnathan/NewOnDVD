@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class movieRatings {
     
-    //To increase number of ratings given, increase ratingCount 
+    //To increase number of ratings given, increase ratingCount
     
     static int ratingCount = 9;
     
@@ -25,8 +25,7 @@ public class movieRatings {
                 
         /*
         This code (Icons) Scrapes cover art for movies from MetaCritic in a local folder
-        with corresponding names. Please do not spam-scrape Metacritic. It's
-        unnecessary.
+        with corresponding names.
         
         Document siteVisitor = siteVisit();
         Icons icon = new Icons();
@@ -34,7 +33,7 @@ public class movieRatings {
         iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor));
         */
         
-        /*
+        /* 
         These statements print out the lists of information given by each
         method. For ease of debugging I will leave them here. Simply uncomment
         them to see the corresponding list printed out.
@@ -48,8 +47,6 @@ public class movieRatings {
         
         // Calling our JFrame window
         
-        //Document siteVisitor = siteVisit();
-        //System.out.println(avgRatings(RTratings(titlesFinal(linksFinal(siteVisitor))), imdbRatings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
         NewJFrame.window();
     }
     
@@ -286,7 +283,7 @@ public class movieRatings {
                 } else{
                     rtRatings.add("tbd");
                 }
-            } else{}
+            }
         }
         return rtRatings;
     }
