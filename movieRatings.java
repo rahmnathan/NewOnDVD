@@ -1,6 +1,7 @@
 import com.jaunt.Document;
 import com.jaunt.Element;
 import com.jaunt.Elements;
+import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 import com.jaunt.UserAgent;
 import java.io.IOException;
@@ -11,26 +12,26 @@ import java.util.ArrayList;
  * Created December 2015
  */
 
-public class movieRatings extends NewJFrame {
+public class movieRatings {
     
     //To increase number of ratings given, increase ratingCount
     
-    static int ratingCount = 10;
+    static int ratingCount = 5;
     
     // userAgent.visit() Throws ResponseException
     
-    public static void main(String[] args) throws ResponseException, IOException{
+    public static void main(String[] args) throws ResponseException, IOException, NotFound{
                 
         /*
         This code (Icons) Scrapes cover art for movies from MetaCritic in a local folder
         with corresponding names. Please do not spam-scrape Metacritic. It's
         unnecessary.
         
+        Document siteVisitor = siteVisit();
         Icons icon = new Icons();
         Icons.saveImage(iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor)), titlesFinal(linksFinal(siteVisitor)));
         iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor));
         */
-        
         
         /*
         These statements print out the lists of information given by each
@@ -47,7 +48,8 @@ public class movieRatings extends NewJFrame {
         // Calling our JFrame window
         
         Document siteVisitor = siteVisit();
-        NewJFrame.window(titlesFinal(linksFinal(siteVisitor)));
+        System.out.println(avgRatings(RTratings(titlesFinal(linksFinal(siteVisitor))), imdbRatings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
+        //NewJFrame.window(titlesFinal(linksFinal(siteVisitor)));
     }
     
     public static Document siteVisit() throws ResponseException{
@@ -189,68 +191,40 @@ public class movieRatings extends NewJFrame {
         return metaRatingsFinal;
     }
     
-    public static ArrayList<String> imdbRatings(ArrayList<String> titleList) throws ResponseException{    
+    public static ArrayList<String> imdbRatings(ArrayList<String> titleList) throws ResponseException, NotFound{    
     
-        // Getting IMBD ratings
-   
+        // Getting IMBD ratings from omdb
+        
+        ArrayList<String> imdbRateFinal = new ArrayList<>();
         ArrayList<String> imdbRate1 = new ArrayList<>();
+        
+        // Removing dates from titles. omdb has a seperate section for release year
+        
         for (String imdbSearch : titleList.subList(0, ratingCount)){
+            if (imdbSearch.contains("2014")){
+                imdbSearch = imdbSearch.replace(" 2014", "");
+            } else if (imdbSearch.contains("2015")){
+                imdbSearch = imdbSearch.replace(" 2015", "");
+            }
+            
+            // Visiting Site
+            
             UserAgent userAgent = new UserAgent();
-            ArrayList<String> finalLinks = new ArrayList<>();
+            String omdbLink = "http://www.omdbapi.com/?t=" + imdbSearch.replace(" ","+")+"&y=2015&plot=short&r=xml";
+            Document ratings5 = userAgent.visit(omdbLink);
             
-            /*IMDB links cannot be directly created as the title is not 
-            contained in the url. Thus we must search IMDB for the movie
-            and select the first (most relevant) link. This is not perfectly
-            accurate and cannot account for sequals/remakes. Hopefully this can be
-            optimized in the future*/
+            // Scraping page
             
-            String imdbLink = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + imdbSearch.replace(" ", "+") + "&s=all";
-            userAgent.visit(imdbLink);
-            
-            // IMDB links are contained in the <a> tags
-            
-            Elements ratingSearch = userAgent.doc.findEvery("<a>");
-            for (Element scrape2 : ratingSearch){
-                String convert = scrape2.toXMLString();
-                
-                // <a> tags with links contain "title/tt" so we are looking for that
-                
-                if (convert.contains("title/tt")){
-                    finalLinks.add(convert.substring(9).replace("\">", ""));
-                    break;
-                }
-
-            }
-            
-            //Visiting movie links and scraping ratings
-            
-            for (String imdbRatings : finalLinks){
-                ArrayList<String> imbdRate= new ArrayList<>();
-                userAgent.visit(imdbRatings);
-                
-                //IMDB ratings are contained in the <span> tag
-                
-                Elements imdbRatingSearch = userAgent.doc.findEvery("<span>");
-
-                for (Element ratings3 : imdbRatingSearch){
-                    imbdRate.add(ratings3.getText().trim());
-                }
-                
-                /* Ratings are held in the 34th position of this list.
-                For an unknown reason, IMDB occasionally returns &nbsp or
-                a random int value instead of the ratings as it should. We take
-                care of that here by replacing it with tbd, but hopefully this
-                can be solved in the future*/
-                
-                String ratings5 = imbdRate.get(34);
-                if (ratings5.contains("nbsp") || ratings5.length() < 2){
-                    imdbRate1.add("tbd");
-                } else{
-                    imdbRate1.add(ratings5);
-                }
-            }
+            Element test = ratings5.findEvery("<movie>");
+            imdbRate1.add(test.outerHTML());
         }
-        return imdbRate1;
+        
+        // Clearing out unecessary data
+        
+        for (String sort : imdbRate1){
+            imdbRateFinal.add(sort.split("imdbRating")[1].substring(2,5));
+        }
+        return imdbRateFinal;
     }
     
     public static ArrayList<String> RTratings(ArrayList<String> titleList){
@@ -337,7 +311,7 @@ public class movieRatings extends NewJFrame {
             } else{
                 rt = true;
                 rtAVG = Float.valueOf(rtRatings.get(countRating));
-            } if (imbdRate1.get(countRating).contains("tbd") || imbdRate1.get(countRating).length()<2){
+            } if (imbdRate1.get(countRating).contains("N/A")){
                 imbd = false;
             } else {
                 imbd = true;
