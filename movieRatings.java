@@ -4,6 +4,7 @@ import com.jaunt.Elements;
 import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 import com.jaunt.UserAgent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -14,9 +15,9 @@ import java.util.ArrayList;
 
 public class movieRatings {
     
-    //To increase number of ratings given, increase ratingCount
+    //To increase number of ratings given, increase ratingCount 
     
-    static int ratingCount = 5;
+    static int ratingCount = 9;
     
     // userAgent.visit() Throws ResponseException
     
@@ -47,9 +48,9 @@ public class movieRatings {
         
         // Calling our JFrame window
         
-        Document siteVisitor = siteVisit();
-        System.out.println(avgRatings(RTratings(titlesFinal(linksFinal(siteVisitor))), imdbRatings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
-        //NewJFrame.window(titlesFinal(linksFinal(siteVisitor)));
+        //Document siteVisitor = siteVisit();
+        //System.out.println(avgRatings(RTratings(titlesFinal(linksFinal(siteVisitor))), imdbRatings(titlesFinal(linksFinal(siteVisitor))), metaRatings(siteVisitor)));
+        NewJFrame.window();
     }
     
     public static Document siteVisit() throws ResponseException{
@@ -163,6 +164,15 @@ public class movieRatings {
             iconsFinal.add(icons2[0]);
         }
         return iconsFinal;
+    }
+    
+    public static ArrayList<String> iconPaths()throws ResponseException {
+        ArrayList<String> iconPaths = new ArrayList<>();
+        for (String title : titlesFinal(linksFinal(siteVisit()))){
+            String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\" + title + ".png";
+            iconPaths.add(path);
+        }
+        return iconPaths;
     }
 
         
