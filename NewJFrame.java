@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * and open the template in the editor. 
  */
 
 /**
@@ -23,7 +23,7 @@ public class NewJFrame extends javax.swing.JFrame {
     static Document site = movieRatings.siteVisit();
     static ArrayList<String> metaLinksFinal = movieRatings.metaLinksFinal(site);
     static ArrayList<String> titleList = movieRatings.titlesFinal(metaLinksFinal);
-    static ArrayList<String> iconPaths = movieRatings.iconPaths();
+    static ArrayList<String> iconPaths = Icons.iconPaths();
     static ArrayList<String> ratings = movieRatings.avgRatings(movieRatings.RTratings(titleList), movieRatings.imdbRatings(titleList), movieRatings.metaRatings(site));
     
     public NewJFrame() {

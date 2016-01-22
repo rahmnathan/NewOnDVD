@@ -1,27 +1,27 @@
 import com.jaunt.Document;
 import com.jaunt.Element;
 import com.jaunt.Elements;
-import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 import com.jaunt.UserAgent;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author Nathan
+ * @author Nathan 
  * Created December 2015
  */
 
 public class movieRatings {
     
-    // To increase number of ratings given, increase ratingCount
+    /*
+        Assigning the information from our websites to variables to reduce scraping.
+        To increase number of ratings given, increase ratingCount.
+    */
     
-    static Document siteVisitor = siteVisit();
     static int ratingCount = 20;
-    
-    // userAgent.visit() Throws ResponseException
-    
+    static Document siteVisitor = siteVisit();
+    static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
+    static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
+        
     public static void main(String[] args) {
         
         /*
@@ -38,7 +38,7 @@ public class movieRatings {
         
         // Verifying we have correct Icons
         
-        checkIcons(titlesFinal(metaLinksFinal(siteVisitor)));
+        Icons.checkIcons();
         
         // Calling our JFrame window
         
@@ -126,87 +126,6 @@ public class movieRatings {
             titleList.add(finalTitle.substring(0,finalTitle.length()-1));
         }
         return titleList; 
-    }
-    
-    public static ArrayList<String> iconLinks(ArrayList<String> titleList, ArrayList<String> linkList) {
-        
-        // Pulling links out of our list and visiting the respective site
-        
-        ArrayList<String> iconsFinal = new ArrayList<>();
-        for (String link : linkList){
-            ArrayList<Element> icons = new ArrayList<>();
-            UserAgent userAgent = new UserAgent();
-            try{
-            userAgent.visit(link);
-            } catch (ResponseException e){}
-            
-            // Grabbing image links
-            
-            Elements iconList = userAgent.doc.findEvery("<img>");
-            for (Element iconSplit : iconList){
-                icons.add(iconSplit);
-            }
-            
-            /* Links are the 3rd item in the list. We're turning them into
-            strings and cutting out the first 43 char as they are part of the
-            tag, not the link. We then split on a '"' to remove the trailing
-            data
-            */
-            
-            String icons1  = icons.get(2).toXMLString().substring(44);
-            String[] icons2 = icons1.split("\"");
-            
-            // Adding the linkn to our final ArrayList
-            
-            iconsFinal.add(icons2[0]);
-        }
-        return iconsFinal;
-    }
-    
-    public static ArrayList<String> iconPaths() {
-        
-        // Assembling the paths with our title list
-        
-        ArrayList<String> iconPaths = new ArrayList<>();
-        for (String title : titlesFinal(metaLinksFinal(siteVisitor))){
-            String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\" + title + ".png";
-            iconPaths.add(path);
-        }
-        return iconPaths;
-    }
-    public static void checkIcons(ArrayList<String> titleList){
-        
-        // This is where my Icons are held
-        
-        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\";
-        
-        // Getting list of files
-        
-        File iconCheck = new File(iconFolder);
-        File[] pathList = iconCheck.listFiles();
-        
-        // Checking if we have the most current Icons.
-        
-        int numNeeded = 0;
-        for (String title : titleList.subList(0, ratingCount)){
-            if(pathList.length == 0){
-                numNeeded = ratingCount;
-                break;
-            }
-            else if (pathList[0].toString().contains(title)){
-                break;
-            } else{
-                numNeeded++;
-            }
-        }
-        
-        // If we're missing Icons, we call the saveImage method from Icons
-        
-        if (numNeeded != 0){
-            try{
-            Icons.saveImage(iconLinks(titlesFinal(metaLinksFinal(siteVisitor)), metaLinksFinal(siteVisitor)), titlesFinal(metaLinksFinal(siteVisitor)), numNeeded);
-            }catch(IOException e){}
-        }
     }
         
     public static ArrayList<String> metaRatings(Document main){

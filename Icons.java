@@ -1,3 +1,8 @@
+import com.jaunt.Element;
+import com.jaunt.Elements;
+import com.jaunt.ResponseException;
+import com.jaunt.UserAgent;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,11 +13,11 @@ import java.util.ArrayList;
 public class Icons {
     public static void saveImage(ArrayList<String> imageUrl, ArrayList<String> titleList, int iconCount) throws IOException {
         
-        // This is where i'm locally storing the photos
+        // This is where i'm locally storing the photos 
 
         String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\";
         
-        // Here we are visiting links to our Icons and downloading the pictures 
+        // Here we are visiting links to our Icons and downloading the pictures
         
         int count = 0;
         for(String link : imageUrl.subList(0, iconCount)){    
@@ -35,6 +40,92 @@ public class Icons {
             }
         }
             os.close();
+    }}
+    
+    public static ArrayList<String> iconLinks(ArrayList<String> titleList, ArrayList<String> linkList) {
+        
+        // Pulling links out of our list and visiting the respective site
+        
+        ArrayList<String> iconsFinal = new ArrayList<>();
+        for (String link : linkList){
+            ArrayList<Element> icons = new ArrayList<>();
+            UserAgent userAgent = new UserAgent();
+            try{
+            userAgent.visit(link);
+            } catch (ResponseException e){}
+            
+            // Grabbing image links
+            
+            Elements iconList = userAgent.doc.findEvery("<img>");
+            for (Element iconSplit : iconList){
+                icons.add(iconSplit);
+            }
+            
+            /* Links are the 3rd item in the list. We're turning them into
+            strings and cutting out the first 43 char as they are part of the
+            tag, not the link. We then split on a '"' to remove the trailing
+            data
+            */
+            
+            String icons1  = icons.get(2).toXMLString().substring(44);
+            String[] icons2 = icons1.split("\"");
+            
+            // Adding the linkn to our final ArrayList
+            
+            iconsFinal.add(icons2[0]);
+        }
+        return iconsFinal;
+    }
+    
+    public static ArrayList<String> iconPaths() {
+        
+        // Assembling the paths with our title list
+        
+        ArrayList<String> iconPaths = new ArrayList<>();
+        for (String title : movieRatings.titlesFinal){
+            String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\" + title + ".png";
+            iconPaths.add(path);
+        }
+        return iconPaths;
+    }
+    
+    public static void checkIcons(){
+        
+        // This is where my Icons are held
+        
+        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\";
+        
+        // Getting list of files
+        
+        File iconCheck = new File(iconFolder);
+        File[] pathList = iconCheck.listFiles();
+        
+        /*
+            Checking if we have the most current Icons.
+            We're doing this by comparing the first Icon name
+            to each of the titles in the title list.
+        */
+        
+        int numNeeded = 0;
+        for (String title : movieRatings.titlesFinal.subList(0, movieRatings.ratingCount)){
+            if(pathList.length == 0){
+                numNeeded = movieRatings.ratingCount;
+                break;
+            }
+            else if (pathList[0].toString().contains(title)){
+                break;
+            } else{
+                numNeeded++;
+            }
+        }
+        
+        // If we're missing Icons, we call the saveImage method
+        
+        if (numNeeded != 0){
+            try{
+            Icons.saveImage(iconLinks(movieRatings.titlesFinal, movieRatings.metaLinksFinal), movieRatings.titlesFinal, numNeeded);
+            }catch(IOException e){}
+        }
     }
 
-}}
+}
