@@ -15,51 +15,48 @@ import java.util.ArrayList;
 
 public class movieRatings {
     
-    //To increase number of ratings given, increase ratingCount
+    // To increase number of ratings given, increase ratingCount
     
-    static int ratingCount = 9;
+    static Document siteVisitor = siteVisit();
+    static int ratingCount = 20;
     
     // userAgent.visit() Throws ResponseException
     
-    public static void main(String[] args) throws ResponseException, IOException, NotFound{
-                
+    public static void main(String[] args) {
+        
         /*
-        This code (Icons) Scrapes cover art for movies from MetaCritic in a local folder
-        with corresponding names.
-        
-        Document siteVisitor = siteVisit();
-        Icons icon = new Icons();
-        Icons.saveImage(iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor)), titlesFinal(linksFinal(siteVisitor)));
-        iconLinks(titlesFinal(linksFinal(siteVisitor)), linksFinal(siteVisitor));
-        */
-        
-        /* 
         These statements print out the lists of information given by each
         method. For ease of debugging I will leave them here. Simply uncomment
         them to see the corresponding list printed out.
 
-        System.out.println(titlesFinal(linksFinal(siteVisitor)));
-        System.out.println(linksFinal(siteVisitor));
+        System.out.println(titlesFinal(metaLinksFinal(siteVisitor)));
+        System.out.println(metaLinksFinal(siteVisitor));
         System.out.println(metaRatings(siteVisitor));
-        System.out.println(RTratings(titlesFinal(linksFinal(siteVisitor))));
-        System.out.println(imdbRatings(titlesFinal(linksFinal(siteVisitor))));
+        System.out.println(RTratings(titlesFinal(metaLinksFinal(siteVisitor))));
+        System.out.println(imdbRatings(titlesFinal(metaLinksFinal(siteVisitor))));
         */
+        
+        // Verifying we have correct Icons
+        
+        checkIcons(titlesFinal(metaLinksFinal(siteVisitor)));
         
         // Calling our JFrame window
         
         NewJFrame.window();
     }
     
-    public static Document siteVisit() throws ResponseException{
+    public static Document siteVisit(){
         
-        // Scraping MetaCritic
+        // Scraping MetaCritic - catching the exception if the page doesn't load
         
         UserAgent userAgent = new UserAgent();
+        try{
         Document main = userAgent.visit("http://www.metacritic.com/browse/dvds/release-date/new-releases/date");
         return main;
+        }catch(ResponseException e){return null;}
     }
     
-    public static ArrayList<String> linksFinal(Document main){
+    public static ArrayList<String> metaLinksFinal(Document main){
 
         // Getting Metacritic Links
         
@@ -99,6 +96,9 @@ public class movieRatings {
         ArrayList<String> titleList = new ArrayList<>();
         int caps3 = 0;
         for(String title : links){
+            
+            // Titles start at index 32
+            
             String title1 = ((title.substring(32)).replace("-", " ")).replace("   ", " ");
             
             /* Capitalizing Titles
@@ -163,15 +163,51 @@ public class movieRatings {
         return iconsFinal;
     }
     
-    public static ArrayList<String> iconPaths()throws ResponseException {
+    public static ArrayList<String> iconPaths() {
+        
+        // Assembling the paths with our title list
+        
         ArrayList<String> iconPaths = new ArrayList<>();
-        for (String title : titlesFinal(linksFinal(siteVisit()))){
+        for (String title : titlesFinal(metaLinksFinal(siteVisitor))){
             String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\" + title + ".png";
             iconPaths.add(path);
         }
         return iconPaths;
     }
-
+    public static void checkIcons(ArrayList<String> titleList){
+        
+        // This is where my Icons are held
+        
+        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\";
+        
+        // Getting list of files
+        
+        File iconCheck = new File(iconFolder);
+        File[] pathList = iconCheck.listFiles();
+        
+        // Checking if we have the most current Icons.
+        
+        int numNeeded = 0;
+        for (String title : titleList.subList(0, ratingCount)){
+            if(pathList.length == 0){
+                numNeeded = ratingCount;
+                break;
+            }
+            else if (pathList[0].toString().contains(title)){
+                break;
+            } else{
+                numNeeded++;
+            }
+        }
+        
+        // If we're missing Icons, we call the saveImage method from Icons
+        
+        if (numNeeded != 0){
+            try{
+            Icons.saveImage(iconLinks(titlesFinal(metaLinksFinal(siteVisitor)), metaLinksFinal(siteVisitor)), titlesFinal(metaLinksFinal(siteVisitor)), numNeeded);
+            }catch(IOException e){}
+        }
+    }
         
     public static ArrayList<String> metaRatings(Document main){
         
@@ -198,7 +234,7 @@ public class movieRatings {
         return metaRatingsFinal;
     }
     
-    public static ArrayList<String> imdbRatings(ArrayList<String> titleList) throws ResponseException, NotFound{    
+    public static ArrayList<String> imdbRatings(ArrayList<String> titleList){    
     
         // Getting IMBD ratings from omdb
         
@@ -218,18 +254,30 @@ public class movieRatings {
             
             UserAgent userAgent = new UserAgent();
             String omdbLink = "http://www.omdbapi.com/?t=" + imdbSearch.replace(" ","+")+"&y=2015&plot=short&r=xml";
-            Document ratings5 = userAgent.visit(omdbLink);
             
-            // Scraping page
+            // Catching excetption if the website doesn't load
+            
+            Document ratings5;
+            try{
+            ratings5 = userAgent.visit(omdbLink);
+            }catch(ResponseException e){ratings5 = null;}
+            
+            // Everything is contained in the outerHTML of the <movie> tag
             
             Element test = ratings5.findEvery("<movie>");
             imdbRate1.add(test.outerHTML());
         }
         
-        // Clearing out unecessary data
+        /*
+            Cleaning out unecessary data.
+            We're catching the OutOfBoundsException in case
+            the rating isn't found
+        */
         
         for (String sort : imdbRate1){
+            try{
             imdbRateFinal.add(sort.split("imdbRating")[1].substring(2,5));
+            }catch(ArrayIndexOutOfBoundsException e){imdbRateFinal.add("N/A");}
         }
         return imdbRateFinal;
     }
