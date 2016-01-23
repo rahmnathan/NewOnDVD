@@ -6,7 +6,7 @@ import com.jaunt.UserAgent;
 import java.util.ArrayList;
 
 /**
- * @author Nathan 
+ * @author Nathan
  * Created December 2015
  */
 
@@ -17,7 +17,7 @@ public class movieRatings {
         To increase number of ratings given, increase ratingCount.
     */
     
-    static int ratingCount = 20;
+    static int ratingCount = 30;
     static Document siteVisitor = siteVisit();
     static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
     static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
@@ -42,7 +42,7 @@ public class movieRatings {
         
         // Calling our JFrame window
         
-        NewJFrame.window();
+        gui.window();
     }
     
     public static Document siteVisit(){
@@ -72,7 +72,7 @@ public class movieRatings {
         
         //Links start in the 36th tag
         
-        for(int links1 = 36;links1<60;links1++){
+        for(int links1 = 36;links1<75;links1++){
             String sortLinks = initialScrape.get(links1).getText();
             
             //Strings containing less than 80 char do not have links in them
