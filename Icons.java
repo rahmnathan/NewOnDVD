@@ -13,9 +13,9 @@ import java.util.ArrayList;
 public class Icons {
     public static void saveImage(ArrayList<String> imageUrl, ArrayList<String> titleList, int iconCount) throws IOException {
         
-        // This is where i'm locally storing the photos 
+        // This is where i'm locally storing the photos
 
-        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\";
+        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
         
         // Here we are visiting links to our Icons and downloading the pictures
         
@@ -83,7 +83,7 @@ public class Icons {
         
         ArrayList<String> iconPaths = new ArrayList<>();
         for (String title : movieRatings.titlesFinal){
-            String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\" + title + ".png";
+            String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\" + title + ".png";
             iconPaths.add(path);
         }
         return iconPaths;
@@ -93,7 +93,7 @@ public class Icons {
         
         // This is where my Icons are held
         
-        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\movieRatings\\src\\img\\";
+        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
         
         // Getting list of files
         
