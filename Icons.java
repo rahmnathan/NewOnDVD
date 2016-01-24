@@ -11,11 +11,12 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class Icons {
-    public static void saveImage(ArrayList<String> imageUrl, ArrayList<String> titleList, int iconCount) throws IOException {
-        
-        // This is where i'm locally storing the photos
+    
+    // This is where i'm locally storing the photos
 
-        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
+    static String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
+    
+    public static void saveImage(ArrayList<String> imageUrl, ArrayList<String> titleList, int iconCount) throws IOException {
         
         // Here we are visiting links to our Icons and downloading the pictures
         
@@ -83,17 +84,13 @@ public class Icons {
         
         ArrayList<String> iconPaths = new ArrayList<>();
         for (String title : movieRatings.titlesFinal){
-            String path = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\" + title + ".png";
+            String path = iconFolder + title + ".png";
             iconPaths.add(path);
         }
         return iconPaths;
     }
     
     public static void checkIcons(){
-        
-        // This is where my Icons are held
-        
-        String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
         
         // Getting list of files
         
@@ -107,6 +104,7 @@ public class Icons {
         */
         
         int numNeeded = 0;
+        try{
         for (String title : movieRatings.titlesFinal.subList(0, movieRatings.ratingCount)){
             if(pathList.length == 0){
                 numNeeded = movieRatings.ratingCount;
@@ -118,6 +116,8 @@ public class Icons {
                 numNeeded++;
             }
         }
+    }catch(NullPointerException e){ numNeeded = movieRatings.ratingCount;}
+
         
         // If we're missing Icons, we call the saveImage method
         

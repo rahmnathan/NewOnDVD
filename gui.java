@@ -15,11 +15,11 @@ public class gui extends JFrame {
     
     // Setting all of our variables
     
-    static Document site = movieRatings.siteVisit();
-    static ArrayList<String> metaLinksFinal = movieRatings.metaLinksFinal(site);
-    static ArrayList<String> titleList = movieRatings.titlesFinal(metaLinksFinal);
+    static Document site = movieRatings.siteVisitor;
+    static ArrayList<String> metaLinksFinal = movieRatings.savedFile("links");
+    static ArrayList<String> titleList = movieRatings.savedFile("titles");
     static ArrayList<String> iconPaths = Icons.iconPaths();
-    static ArrayList<String> ratings = movieRatings.avgRatings(movieRatings.RTratings(titleList), movieRatings.imdbRatings(titleList), movieRatings.metaRatings(site));
+    static ArrayList<String> ratings = movieRatings.savedFile("avgRatings");
     
     // Creating the components we'll be using
     

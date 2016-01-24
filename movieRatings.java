@@ -3,6 +3,12 @@ import com.jaunt.Element;
 import com.jaunt.Elements;
 import com.jaunt.ResponseException;
 import com.jaunt.UserAgent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +23,7 @@ public class movieRatings {
         To increase number of ratings given, increase ratingCount.
     */
     
-    static int ratingCount = 30;
+    static int ratingCount = 50;
     static Document siteVisitor = siteVisit();
     static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
     static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
@@ -36,9 +42,14 @@ public class movieRatings {
         System.out.println(imdbRatings(titlesFinal(metaLinksFinal(siteVisitor))));
         */
         
-        // Verifying we have correct Icons
+        // Verifying that we have current information stored in our files
         
-        Icons.checkIcons();
+        if(!checkFile()){
+            Icons.checkIcons();
+            fileWrite(titlesFinal, "titles");
+            fileWrite(metaLinksFinal, "links");
+            fileWrite(avgRatings(RTratings(titlesFinal), imdbRatings(titlesFinal), metaRatings(siteVisitor)), "avgRatings");
+        }
         
         // Calling our JFrame window
         
@@ -72,7 +83,7 @@ public class movieRatings {
         
         //Links start in the 36th tag
         
-        for(int links1 = 36;links1<75;links1++){
+        for(int links1 = 36;links1<120;links1++){
             String sortLinks = initialScrape.get(links1).getText();
             
             //Strings containing less than 80 char do not have links in them
@@ -255,6 +266,65 @@ public class movieRatings {
         return rtRatings;
     }
 
+    public static void fileWrite(ArrayList<String> save, String name){
+        
+        // Writing current information to files
+        
+        File ratingsSave = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\" + name +".txt");
+        BufferedWriter writer;
+        
+        /*
+            Splitting everything up with the unique string "splithere159"
+            so we can split it easily later
+        */
+        
+        try{
+        writer = new BufferedWriter(new FileWriter(ratingsSave));
+        for (String x : save){
+            writer.append(x + "splithere159");
+        }
+        writer.close();
+        }catch(IOException e){}
+    }
+    
+    public static ArrayList<String> savedFile(String file){
+        
+        // Getting information stored in our file
+        
+        ArrayList<String> savedFileData = new ArrayList<String>();
+        File ratingsRead = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\" + file + ".txt");
+        BufferedReader reader;
+        String[] sort = null;
+        try{
+            reader = new BufferedReader(new FileReader(ratingsRead));
+            sort = reader.readLine().split("splithere159");
+        } catch(IOException e){}
+        for (String x : sort){
+            savedFileData.add(x);
+        }
+        return savedFileData;
+    }
+    
+    public static boolean checkFile(){
+        
+        // Checking to see if the titles in the file match current titles
+        
+        File ratingsRead = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\titles.txt");
+        BufferedReader reader;
+        String[] sort = null;
+        
+        // Catching the exception if file doesn't exist or is empty
+        
+        try{
+            reader = new BufferedReader(new FileReader(ratingsRead));
+            sort = reader.readLine().split("splithere159");
+        if (!sort[0].contains(titlesFinal.get(0)) || sort == null){
+            return false;
+        } else{
+            return true;
+        }
+        } catch(IOException | NullPointerException e){return false;}
+    }
     
     public static ArrayList<String> avgRatings(ArrayList<String> rtRatings,ArrayList<String> imbdRate1, ArrayList<String> metaRatingsFinal){
         
