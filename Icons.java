@@ -7,7 +7,10 @@ import java.util.ArrayList;
 
 public class Icons {
     
-    // This is where i'm locally storing the photos
+    /* This is where i'm locally storing the photos. You can put this folder
+     * anywhere as long as you use the correct path to it, and the Icons will
+     * automatically populate the folder.
+     */
 
     static String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
     
@@ -58,9 +61,9 @@ public class Icons {
             }
             
             /* Links are the 3rd item in the list. We're turning them into
-            strings and cutting out the first 43 char as they are part of the
-            tag, not the link. We then split on a '"' to remove the trailing
-            data
+             * strings and cutting out the first 43 char as they are part of the
+             * tag, not the link. We then split on a '"' to remove the trailing
+             * data.
             */
             
             String icons1  = icons.get(2).toXMLString().substring(44);
@@ -93,10 +96,10 @@ public class Icons {
         File[] pathList = iconCheck.listFiles();
         
         /*
-            Checking if we have the most current Icons.
-            We're doing this by comparing the first Icon name
-            to each of the titles in the title list.
-        */
+         * Checking if we have the most current Icons.
+         * We're doing this by comparing the first Icon name
+         * to each of the titles in the title list.
+         */
         
         int numNeeded = 0;
         try{

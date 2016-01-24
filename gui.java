@@ -1,8 +1,7 @@
 import com.jaunt.Document;
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.ArrayList;
 import javax.swing.*;
 

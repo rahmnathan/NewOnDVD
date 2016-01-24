@@ -9,16 +9,22 @@ import java.util.ArrayList;
 
 public class movieRatings {
     
-    /*
-        Assigning the information from our websites to variables to reduce scraping.
-        To increase number of ratings given, increase ratingCount.
-    */
+    /* Assigning the information from our websites to variables to reduce scraping.
+     * To increase number of ratings given, increase ratingCount.
+     */
     
     static int ratingCount = 50;
     static Document siteVisitor = siteVisit();
     static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
     static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
-        
+    
+    /* This is the location of my locally stored text files. Change this path to
+     * wherever you want these files stored and they will be automatically
+     * generated
+     */
+    
+    static File savedData = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\");        
+    
     public static void main(String[] args) {
         
         /*
@@ -72,17 +78,17 @@ public class movieRatings {
             initialScrape.add(scrape1);
         }
         
-        //Links start in the 36th tag
+        // Links start in the 36th tag
         
         for(int links1 = 36;links1<120;links1++){
             String sortLinks = initialScrape.get(links1).getText();
             
-            //Strings containing less than 80 char do not have links in them
+            // Strings containing less than 80 char do not have links in them
             
             if(sortLinks.length()>80){ 
                 String makeString = (initialScrape.get(links1)).toXMLString();
                 
-                //Links begin at char 9 and trail with ">  Cleaning them up here
+                // Links begin at char 9 and trail with ">  Cleaning them up here
                 
                 links.add(makeString.substring(9, makeString.length()-2));
             }
@@ -104,9 +110,9 @@ public class movieRatings {
             String title1 = ((title.substring(32)).replace("-", " ")).replace("   ", " ");
             
             /* Capitalizing Titles
-            The titles are currently in a string like "harry potter" so we're
-            splitting them up to capitalize each word
-            */
+             * The titles are currently in a string like "harry potter" so we're
+             * splitting them up to capitalize each word
+             */
             
             for(String words : title1.split(" ")){
                 capList.add(Character.toUpperCase(words.charAt(0)) + words.substring(1));
@@ -117,13 +123,13 @@ public class movieRatings {
             String finalTitle = "";
             for(String h : title1.split(" ")){
                 
-                //Had to add a space after each word so there is a trailing space
+                // Had to add a space after each word so there is a trailing space
                 
                 finalTitle = finalTitle + capList.get(caps3)+ " ";
                 caps3++;
             }
             
-            //Assembling final list and Removing trailing space
+            // Assembling final list and Removing trailing space
             
             titleList.add(finalTitle.substring(0,finalTitle.length()-1));
         }
@@ -137,7 +143,7 @@ public class movieRatings {
         ArrayList<String> metaRatingsFinal = new ArrayList<>();
         ArrayList<Element> scrapeList = new ArrayList<>();
         
-        //metacritic ratings are contained in the <span> tags
+        // Metacritic ratings are contained in the <span> tags
         
         Elements ratings = main.findEvery("<span>");
         for(Element scrape5 : ratings){
@@ -145,9 +151,9 @@ public class movieRatings {
         }
         
         /* Metacritic ratings start at line 47 and occur every 4 elements
-        Currently collects the first 50 ratings. This can be increased by
-        increasing the limit of counting.
-        */
+         * Currently collects the first 50 ratings. This can be increased by
+         * increasing the limit of counting.
+         */
         
         for(int counting = 47;counting < 250;counting+=4){
             metaRatingsFinal.add((scrapeList.get(counting)).getText());
@@ -189,11 +195,10 @@ public class movieRatings {
             imdbRate1.add(test.outerHTML());
         }
         
-        /*
-            Cleaning out unecessary data.
-            We're catching the OutOfBoundsException in case
-            the rating isn't found
-        */
+        /* Cleaning out unecessary data.
+         * We're catching the OutOfBoundsException in case
+         * the rating isn't found
+         */
         
         for (String sort : imdbRate1){
             try{
@@ -205,7 +210,7 @@ public class movieRatings {
     
     public static ArrayList<String> RTratings(ArrayList<String> titleList){
         
-        //Getting RottenTomatoe's ratings
+        // Getting RottenTomatoe's ratings
         
         ArrayList<String> rtRatings = new ArrayList<>();
         for (String rtSearch : titleList.subList(0, ratingCount)){
@@ -213,13 +218,14 @@ public class movieRatings {
             UserAgent userAgent = new UserAgent();
             ArrayList<String> rtRatings1 = new ArrayList<>();
             
-            /*Visiting movie link on RT. Not all searchs return the correct
-            movie. Sequals/remakes/similar movies get mixed in here. Needs to be
-            optimized*/
+            /* Visiting movie link on RT. Not all searchs return the correct
+             * movie. Sequals/remakes/similar movies get mixed in here. Needs to be
+             * optimized
+             */
             
             String rtLink = "http://www.rottentomatoes.com/m/" + rtSearch.replace(" ", "_");
             
-            //Catching the exception if the link is not found
+            // Catching the exception if the link is not found
             
             try{
             userAgent.visit(rtLink);}
@@ -235,17 +241,18 @@ public class movieRatings {
                 }
 
                 /* Sometimes RT throws integers that are not related to the ratings.
-                We check for that here by checking the length of the string
-                */
+                 * We check for that here by checking the length of the string
+                 */
 
                 if (rtRatings1.get(235).length() > 1){
 
-                    /*Ratings are in line 235 and are formatted as "9.9/10"
-                    We're getting rid of "/10" here */
+                    /* Ratings are in line 235 and are formatted as "9.9/10"
+                     * We're getting rid of "/10" here 
+                     */
 
                     String[] rtRatings2 = rtRatings1.get(235).split("/");
 
-                    //RottenTomatoes rates out of 5 so I had to double their score
+                    // RottenTomatoes rates out of 5 so I had to double their score
 
                     float rtRatings3 = Float.valueOf(rtRatings2[0])*2;
                     rtRatings.add(String.valueOf(rtRatings3));
@@ -261,13 +268,12 @@ public class movieRatings {
         
         // Writing current information to files
         
-        File ratingsSave = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\" + name +".txt");
+        File ratingsSave = new File(savedData + name +".txt");
         BufferedWriter writer;
         
-        /*
-            Splitting everything up with the unique string "splithere159"
-            so we can split it easily later
-        */
+        /* Splitting everything up with the unique string "splithere159"
+         * so we can split it easily later
+         */
         
         try{
         writer = new BufferedWriter(new FileWriter(ratingsSave));
@@ -283,7 +289,7 @@ public class movieRatings {
         // Getting information stored in our file
         
         ArrayList<String> savedFileData = new ArrayList<String>();
-        File ratingsRead = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\" + file + ".txt");
+        File ratingsRead = new File(savedData + file + ".txt");
         BufferedReader reader;
         String[] sort = null;
         try{
@@ -300,7 +306,7 @@ public class movieRatings {
         
         // Checking to see if the titles in the file match current titles
         
-        File ratingsRead = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\titles.txt");
+        File ratingsRead = new File(savedData + "titles.txt");
         BufferedReader reader;
         String[] sort = null;
         
@@ -320,8 +326,8 @@ public class movieRatings {
     public static ArrayList<String> avgRatings(ArrayList<String> rtRatings,ArrayList<String> imbdRate1, ArrayList<String> metaRatingsFinal){
         
         /* Getting Average ratings
-        Not all sites provided ratings for all movies
-        */
+         * Not all sites provided ratings for all movies
+         */
         
         ArrayList<String> finalRate = new ArrayList<>();
         for(int countRating = 0 ; countRating < ratingCount ; countRating++){
@@ -334,7 +340,7 @@ public class movieRatings {
             float con;
             String finalRates;
             
-            //Checking which ratings we have succesfully pulled
+            // Checking which ratings we have succesfully pulled
             
             if (metaRatingsFinal.get(countRating).contains("tbd")){
                 mt = false;
@@ -353,7 +359,7 @@ public class movieRatings {
                 imbdAVG = Float.valueOf(imbdRate1.get(countRating));
             }
             
-            //Calculating averages based on which ratings we've scraped
+            // Calculating averages based on which ratings we've scraped
             
             if (mt && rt && imbd){
                 con = ((metaAVG+rtAVG+imbdAVG)/3);
