@@ -1,12 +1,7 @@
 import com.jaunt.Element;
 import com.jaunt.Elements;
-import com.jaunt.ResponseException;
-import com.jaunt.UserAgent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.jaunt.*;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 

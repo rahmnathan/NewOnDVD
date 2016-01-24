@@ -1,15 +1,10 @@
 import com.jaunt.Document;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Panel;
-import java.awt.ScrollPane;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 public class gui extends JFrame {
     
