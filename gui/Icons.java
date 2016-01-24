@@ -1,5 +1,6 @@
-import com.jaunt.Element;
-import com.jaunt.Elements;
+package gui;
+
+import back_end.movieRatings;
 import com.jaunt.*;
 import java.io.*;
 import java.net.URL;
@@ -12,7 +13,7 @@ public class Icons {
      * automatically populate the folder.
      */
 
-    static String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\img\\";
+    static String iconFolder = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\images\\";
     
     public static void saveImage(ArrayList<String> imageUrl, ArrayList<String> titleList, int iconCount) throws IOException {
         

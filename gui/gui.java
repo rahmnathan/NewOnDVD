@@ -1,3 +1,6 @@
+package gui;
+
+import back_end.movieRatings;
 import com.jaunt.Document;
 import java.awt.*;
 import java.io.IOException;

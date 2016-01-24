@@ -1,3 +1,6 @@
+package back_end;
+
+import gui.*;
 import com.jaunt.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -13,20 +16,19 @@ public class movieRatings {
      * To increase number of ratings given, increase ratingCount.
      */
     
-    static int ratingCount = 50;
-    static Document siteVisitor = siteVisit();
-    static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
-    static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
+    public static int ratingCount = 50;
+    public static Document siteVisitor = siteVisit();
+    public static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
+    public static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
     
     /* This is the location of my locally stored text files. Change this path to
      * wherever you want these files stored and they will be automatically
      * generated
      */
     
-    static File savedData = new File("C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\");        
+    static String savedData = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\storage\\";        
     
     public static void main(String[] args) {
-        
         /*
         These statements print out the lists of information given by each
         method. For ease of debugging I will leave them here. Simply uncomment
