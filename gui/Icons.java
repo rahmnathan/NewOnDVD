@@ -20,7 +20,7 @@ public class Icons {
         // Here we are visiting links to our Icons and downloading the pictures
         
         int count = 0;
-        for(String link : imageUrl.subList(0, iconCount)){    
+        for(String link : imageUrl.subList(0, iconCount + 1)){    
             URL url = new URL(link);
             OutputStream os;
             
@@ -70,7 +70,7 @@ public class Icons {
             String icons1  = icons.get(2).toXMLString().substring(44);
             String[] icons2 = icons1.split("\"");
             
-            // Adding the linkn to our final ArrayList
+            // Adding the link to our final ArrayList
             
             iconsFinal.add(icons2[0]);
         }
@@ -82,7 +82,7 @@ public class Icons {
         // Assembling the paths with our title list
         
         ArrayList<String> iconPaths = new ArrayList<>();
-        for (String title : movieRatings.titlesFinal){
+        for (String title : movieRatings.titlesFinal.subList(0, movieRatings.ratingCount)){
             String path = iconFolder + title + ".png";
             iconPaths.add(path);
         }
@@ -96,8 +96,7 @@ public class Icons {
         File iconCheck = new File(iconFolder);
         File[] pathList = iconCheck.listFiles();
         
-        /*
-         * Checking if we have the most current Icons.
+        /* Checking if we have the most current Icons.
          * We're doing this by comparing the first Icon name
          * to each of the titles in the title list.
          */

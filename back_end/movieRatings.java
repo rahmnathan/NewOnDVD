@@ -16,7 +16,7 @@ public class movieRatings {
      * To increase number of ratings given, increase ratingCount.
      */
     
-    public static int ratingCount = 50;
+    public static int ratingCount = 40;
     public static Document siteVisitor = siteVisit();
     public static ArrayList<String> metaLinksFinal = metaLinksFinal(siteVisitor);
     public static ArrayList<String> titlesFinal = titlesFinal(metaLinksFinal);
@@ -29,19 +29,8 @@ public class movieRatings {
     static String savedData = "C:\\Users\\Nathan\\Documents\\NetBeansProjects\\newOnDVD\\src\\storage\\";        
     
     public static void main(String[] args) {
-        /*
-        These statements print out the lists of information given by each
-        method. For ease of debugging I will leave them here. Simply uncomment
-        them to see the corresponding list printed out.
-
-        System.out.println(titlesFinal(metaLinksFinal(siteVisitor)));
-        System.out.println(metaLinksFinal(siteVisitor));
-        System.out.println(metaRatings(siteVisitor));
-        System.out.println(RTratings(titlesFinal(metaLinksFinal(siteVisitor))));
-        System.out.println(imdbRatings(titlesFinal(metaLinksFinal(siteVisitor))));
-        */
         
-        // Verifying that we have current information stored in our files
+        // Verifying that we have current data using checkFile() method
         
         if(!checkFile()){
             Icons.checkIcons();
@@ -82,7 +71,7 @@ public class movieRatings {
         
         // Links start in the 36th tag
         
-        for(int links1 = 36;links1<120;links1++){
+        for(int links1 = 36;links1<198;links1++){
             String sortLinks = initialScrape.get(links1).getText();
             
             // Strings containing less than 80 char do not have links in them
@@ -111,10 +100,7 @@ public class movieRatings {
             
             String title1 = ((title.substring(32)).replace("-", " ")).replace("   ", " ");
             
-            /* Capitalizing Titles
-             * The titles are currently in a string like "harry potter" so we're
-             * splitting them up to capitalize each word
-             */
+            // Capitalizing Titles
             
             for(String words : title1.split(" ")){
                 capList.add(Character.toUpperCase(words.charAt(0)) + words.substring(1));
@@ -152,10 +138,7 @@ public class movieRatings {
             scrapeList.add(scrape5);
         }
         
-        /* Metacritic ratings start at line 47 and occur every 4 elements
-         * Currently collects the first 50 ratings. This can be increased by
-         * increasing the limit of counting.
-         */
+        // Metacritic ratings start at line 47 and occur every 4 elements
         
         for(int counting = 47;counting < 250;counting+=4){
             metaRatingsFinal.add((scrapeList.get(counting)).getText());
@@ -184,7 +167,7 @@ public class movieRatings {
             UserAgent userAgent = new UserAgent();
             String omdbLink = "http://www.omdbapi.com/?t=" + imdbSearch.replace(" ","+")+"&y=2015&plot=short&r=xml";
             
-            // Catching excetption if the website doesn't load
+            // Catching exception if the website doesn't load
             
             Document ratings5;
             try{
@@ -317,11 +300,11 @@ public class movieRatings {
         try{
             reader = new BufferedReader(new FileReader(ratingsRead));
             sort = reader.readLine().split("splithere159");
-        if (!sort[0].contains(titlesFinal.get(0)) || sort == null){
-            return false;
-        } else{
-            return true;
-        }
+            if (!sort[0].contains(titlesFinal.get(0)) || sort == null){
+                return false;
+            } else{
+                return true;
+            }
         } catch(IOException | NullPointerException e){return false;}
     }
     

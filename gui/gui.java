@@ -27,8 +27,8 @@ public class gui extends JFrame {
     // Setting up some dimensions we'll use later
 
     static Dimension window = new Dimension(595, 450);
-    static Dimension icon = new Dimension(100, 125);
-    static Dimension title = new Dimension(100, 20); 
+    static Dimension icon = new Dimension(100, 150);
+    static Dimension title = new Dimension(100, 15); 
     
     
     
@@ -44,23 +44,23 @@ public class gui extends JFrame {
         panel1.setLayout(null);
         scrollPane.setLocation(0, 0);
         frame.add(scrollPane);
-        scrollPane.setSize(580, 450);
+        scrollPane.setSize(580, 470);
         scrollPane.setVisible(true);
         frame.setSize(window);
-        panel1.setSize(500, 2000);
+        panel1.setSize(500, 1800);
         scrollPane.add(panel1);
         
         int n = 0;
         int xLocation = 10;
         int yLocationIcon = 10;
-        int yLocationTitle = 135;
+        int yLocationTitle = 160;
         
         // We're displaying 5 movies per line. This for-loop does that for us
         
-        for (String link : metaLinksFinal){
+        for (String link : metaLinksFinal.subList(0, movieRatings.ratingCount)){
             if (n > 0 && n%5 == 0){
-                yLocationIcon+=185;
-                yLocationTitle+=185;
+                yLocationIcon+=190;
+                yLocationTitle+=190;
                 xLocation = 10;
             }
             
@@ -78,8 +78,9 @@ public class gui extends JFrame {
             
             JLabel ratingLabel = new javax.swing.JLabel();
             JLabel titleLabel = new javax.swing.JLabel();
-            titleLabel.setText(titleList.get(n));
+            titleLabel.setText("<html><center>" + titleList.get(n) + "</center><html>");
             titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            titleLabel.setVerticalAlignment(SwingConstants.TOP);
             titleLabel.setSize(title);
             titleLabel.setLocation(xLocation, yLocationTitle);
             try{
@@ -99,6 +100,7 @@ public class gui extends JFrame {
         scrollPane.add(panel1);
         frame.setVisible(true);
     }
+    
     public static void openPage(String link){
         
         // This method opens the metacritic link when you click an Icon
